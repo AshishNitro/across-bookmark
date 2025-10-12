@@ -1,7 +1,7 @@
 import mongoose, {model, Schema} from "mongoose";
  
 
-mongoose.connect("mongodb://localhost:27017/bookmark");
+mongoose.connect("mongodb://localhost:27017/remember");
 
 const UserSchema = new Schema({
     username: {type: String, unique: true},
