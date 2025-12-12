@@ -1,5 +1,5 @@
-import { UserModel,ContentModel,LikeModel  } from "@repo/database/db";
-import express  from "express";
+import { UserModel, ContentModel, LikeModel } from "@repo/database/db";
+import express from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { JWT_PASSWORD } from "./config";
 import { userMiddleware } from "./useMiddleware";
@@ -8,47 +8,53 @@ import { userMiddleware } from "./useMiddleware";
 const app = express();
 app.use(express.json());
 
-app.post("/signup", async (req, res) =>{
+app.post("/signup", async (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
 
 
-    try{
-        await UserModel.create({username, password});
+    try {
+        await UserModel.create({ username, password });
         res.status(201).send("User Created");
-    }catch(e){
+    } catch (e) {
         res.status(411).json({
             message: "user already exisits"
         })
     }
-    
+
 })
 
 
-app.post("/api/signin", async (req,res )=>{
+app.post("/signin", async (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
 
-    const userExists =  await UserModel.findOne({
-        username,
-        password
-    })
-    if(userExists){
-        const token = jwt.sign({
-            id: userExists._id,
-        }, JWT_PASSWORD)
-        res.json({
-            token
+    try {
+        const userExists = await UserModel.findOne({
+            username,
+            password
         })
-    }
-    else{
-        res.status(401).json({
-            message: "Invalid Credentials"
+        if (userExists) {
+            const token = jwt.sign({
+                id: userExists._id,
+            }, JWT_PASSWORD)
+            res.json({
+                token
+            })
+        }
+        else {
+            res.status(403).json({
+                message: "Incorrect credentials"
+            })
+        }
+    } catch (e) {
+        res.status(500).json({
+            message: "Internal server error"
         })
     }
 })
 
-app.post("/content", userMiddleware, async (req, res)=>{
+app.post("/content", userMiddleware, async (req, res) => {
     const link = req.body.link;
     const type = req.body.type;
 
@@ -64,18 +70,18 @@ app.post("/content", userMiddleware, async (req, res)=>{
     })
 })
 
-app.get("/content", userMiddleware, async (req, res)=>{
-    const userId= req.userId;
+app.get("/content", userMiddleware, async (req, res) => {
+    const userId = req.userId;
     const content = await ContentModel.find({
         userId: userId
     }).populate("userId", "username")
     res.json({
         content
     })
-} )
+})
 
 
-app.delete("/content", userMiddleware, async (req, res)=>{
+app.delete("/content", userMiddleware, async (req, res) => {
     const contentId = req.body.contentId;
 
     await ContentModel.deleteMany({
@@ -85,7 +91,7 @@ app.delete("/content", userMiddleware, async (req, res)=>{
     res.json({
         message: "Content deleted"
     })
-} )
-    
+})
+
 app.listen(3005);
 console.log("HTTP web server running on http://localhost:3005");

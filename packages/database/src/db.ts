@@ -1,11 +1,11 @@
-import mongoose, {model, Schema} from "mongoose";
- 
+import mongoose, { model, Schema } from "mongoose";
+
 
 mongoose.connect("mongodb://localhost:27017/remember");
 
 const UserSchema = new Schema({
-    username: {type: String, unique: true},
-    pasword: String
+    username: { type: String, unique: true },
+    password: String
 })
 
 export const UserModel = model("User", UserSchema);
@@ -13,16 +13,16 @@ export const UserModel = model("User", UserSchema);
 const ContentSchema = new Schema({
     title: String,
     link: String,
-    tags: [{type: mongoose.Types.ObjectId, ref: "Tag"}],
+    tags: [{ type: mongoose.Types.ObjectId, ref: "Tag" }],
     type: String,
-    userId: {type: mongoose.Types.ObjectId, ref: "User", required: true},
+    userId: { type: mongoose.Types.ObjectId, ref: "User", required: true },
 })
 
 export const ContentModel = model("Content", ContentSchema);
 
 const LikeSchema = new Schema({
     hash: String,
-    userId: {type: mongoose.Types.ObjectId, ref: 'User', required: true, unique: true },
+    userId: { type: mongoose.Types.ObjectId, ref: 'User', required: true, unique: true },
 
 })
 
