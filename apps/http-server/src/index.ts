@@ -1,8 +1,9 @@
 import { UserModel, ContentModel, LikeModel } from "@repo/database/db";
-import express from "express";
+import express, { request } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { JWT_PASSWORD } from "./config";
 import { userMiddleware } from "./useMiddleware";
+import { random } from "./util";
 
 
 const app = express();
@@ -92,6 +93,48 @@ app.delete("/content", userMiddleware, async (req, res) => {
         message: "Content deleted"
     })
 })
+
+app.post("/share", userMiddleware, async (req, res) => {
+    const share = req.body.share;
+
+    if (share) {
+        const existingLink = await LikeModel.findOne({
+            userId: req.userId,
+
+
+        });
+        if (existingLink) {
+            res.json({
+                hash: existingLink.hash
+            })
+            return;
+
+        }
+        const hash = random(7);
+        await LikeModel.create({
+            hash,
+            userId: req.userId,
+        })
+        res.json({
+            hash
+        })
+    }
+    else {
+        await LikeModel.deleteOne({
+            userId: req.userId
+        });
+        res.json({
+            message: "Link removed"
+        })
+    }
+})
+
+//app.get("/shareLink", async (req, res)=>{
+//  const hash = req.params.shareLike;
+//const link = await LikeModel.findOne({
+//   hash
+// })
+//}) 
 
 app.listen(3005);
 console.log("HTTP web server running on http://localhost:3005");
