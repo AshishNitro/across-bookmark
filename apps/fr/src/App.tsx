@@ -3,6 +3,7 @@ import { Button } from './components/ui/Buttion'
 import { AddIcon } from './components/icons/add'
 import { closeIcon } from './components/icons/close'
 import { shareIcon } from './components/icons/share'
+import { Card } from './components/card'
 
 
 function App() {
@@ -20,6 +21,8 @@ function App() {
     startIcon={<AddIcon  size={"md"} />}
     size= "ss"
     title = {"Share sec "} ></Button>
+
+    <Card />
 
     
    
